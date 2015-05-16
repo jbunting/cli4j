@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jbunting/cli4j.svg)](https://travis-ci.org/jbunting/cli4j)
+[![Build Status](https://travis-ci.org/jbunting/cli4j.svg)](https://travis-ci.org/jbunting/cli4j) [![Coverage Status](https://coveralls.io/repos/jbunting/cli4j/badge.svg)](https://coveralls.io/r/jbunting/cli4j)
 cli4j
 -----
 
