@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/jbunting/cli4j.svg)](https://travis-ci.org/jbunting/cli4j)
 cli4j
 -----
 
