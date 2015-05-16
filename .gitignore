@@ -1,0 +1,38 @@
+# use glob syntax.
+syntax: glob
+
+# eclipse
+.classpath
+.project
+.settings
+
+# maven
+target/
+*.versionsBackup
+build.number
+dependency-reduced-pom.xml
+build/
+
+# common junk
+*.log
+*.swp
+*.diff
+*.patch
+
+# intellij
+*.iml
+*.ipr
+*.iws
+.idea/
+atlassian-ide-plugin.xml
+
+# Mac filesystem dust
+.DS_Store
+
+# pmd
+.pmdruleset
+.pmd
+
+# vim
+.*.sw[a-p]
+
