@@ -54,8 +54,7 @@ public class HelloCommand {
  
 ## Next Steps
 
-1. Fork and embed JCommander -- allow for more lazy instantiation of objects and defining @Parameter as method 
-   parameters.
+1. Remove JCommander from public API.
 2. Move from reflection-based inspection to annotation processor based.
 3. Modify Hello to define @Parameter directly on method parameters.
 4. Allow for overloading of methods to indicate optional parameters.
