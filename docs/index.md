@@ -22,7 +22,7 @@ I'll also note that the style and content of this file borrows heavily from [Cli
  
 ## Simple?
 
-Here's an example of what a command would look like:
+Here's an example of what a command would look like (note that this is currently, not our end goal):
 
 ```java
 public class HelloCommand {
