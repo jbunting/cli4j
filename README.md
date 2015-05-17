@@ -52,7 +52,7 @@ public class HelloCommand {
 }
 ```
  
-## State of Development
+## Next Steps
 
 1. Fork and embed JCommander -- allow for more lazy instantiation of objects and defining @Parameter as method 
    parameters.
@@ -60,3 +60,7 @@ public class HelloCommand {
 3. Modify Hello to define @Parameter directly on method parameters.
 4. Allow for overloading of methods to indicate optional parameters.
 5. Develop benchmarking.
+6. Add output controls. (color, formatting, etc)
+7. Improve testing process.
+8. Make using jline in commands simple.
+9. Make using jcurses in commands simple -- maybe add a jaxrs-like framework for it.
