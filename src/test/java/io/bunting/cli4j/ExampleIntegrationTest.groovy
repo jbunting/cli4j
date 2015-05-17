@@ -17,5 +17,9 @@ class ExampleIntegrationTest extends Specification {
       cli4J.execute("hello --name Fred".split("\\s+"))
     then: "i got output"
       1 * cliAdapter.printf("Hello %s!%n", "Fred")
+    when: "i invoke a command with count 5"
+      cli4J.execute("hello --name Fred --count 5".split("\\s+"))
+    then: "i got the output 5 times"
+      5 * cliAdapter.printf("Hello %s!%n", "Fred")
   }
 }
