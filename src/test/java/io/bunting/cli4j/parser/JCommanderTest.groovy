@@ -939,161 +939,160 @@ public class JCommanderTest extends Specification {
       ["-h", "--host"] == V2.names
       V2.validateCalled
   }
-//
-//  public void usageCommandsUnderUsage() {
-//    class Arg {
-//    }
-//    @Parameters(commandDescription = "command a")
-//    class ArgCommandA {
-//      @Parameter(description = "command a parameters")
+
+  class UsageCommandsUnderUsageArg {
+  }
+  @Parameters(commandDescription = "command a")
+  class UsageCommandsArgCommandA {
+    @Parameter(description = "command a parameters")
+    List<String> parameters;
+  }
+  @Parameters(commandDescription = "command b")
+  class UsageCommandsArgCommandB {
+    @Parameter(description = "command b parameters")
+    List<String> parameters;
+  }
+  def "usageCommandsUnderUsage"() {
+
+    when: "commands added"
+      UsageCommandsUnderUsageArg a = new UsageCommandsUnderUsageArg();
+
+      JCommander c = new JCommander(a);
+      c.addCommand("a", new UsageCommandsArgCommandA());
+      c.addCommand("b", new UsageCommandsArgCommandB());
+
+    then: "usage has proper text"
+      StringBuilder sb = new StringBuilder();
+      c.usage(sb);
+      sb.toString().contains("[command options]\n  Commands:");
+  }
+
+  class UsageWithEmptyLineArg {
+  }
+  @Parameters(commandDescription = "command a")
+  class ArgCommandA {
+    @Parameter(description = "command a parameters")
+    List<String> parameters;
+  }
+  @Parameters(commandDescription = "command b")
+  class ArgCommandB {
+    @Parameter(description = "command b parameters")
+    List<String> parameters;
+  }
+  def "usageWithEmpytLine"() {
+
+    when: "commands added"
+      UsageWithEmptyLineArg a = new UsageWithEmptyLineArg();
+
+      JCommander c = new JCommander(a);
+      c.addCommand("a", new ArgCommandA());
+      c.addCommand("b", new ArgCommandB());
+
+    then: "usage has proper text"
+      StringBuilder sb = new StringBuilder();
+      c.usage(sb);
+      sb.toString().contains("command a parameters\n\n    b");
+  }
+
+
+  class PartialValidationArg {
+    @Parameter(names = [ "-h", "--host" ])
+    String host;
+  }
+  public void partialValidation() {
+    when: "args parsed"
+      PartialValidationArg a = new PartialValidationArg();
+      JCommander jc = new JCommander();
+      jc.setAcceptUnknownOptions(true);
+      jc.addObject(a);
+      jc.parse("-a", "foo", "-h", "host");
+    then: "values match"
+      "host" == a.host
+      ["-a", "foo"] == jc.getUnknownOptions()
+  }
+
+  /**
+   * GITHUB-137.
+   */
+  class ListArgShouldBeClearedArgs {
+    @Parameter(description = "[endpoint]")
+    public List<String> endpoint = Lists.newArrayList("prod");
+  }
+  def "listArgShouldBeCleared"() {
+    when: "args parsed"
+      ListArgShouldBeClearedArgs a = new ListArgShouldBeClearedArgs();
+      new JCommander(a,  "dev" );
+      then: "values match"
+        ["dev"] == a.endpoint
+  }
+
+  class DashDashParameterArguments {
+    @Parameter(names = [ "-name" ])
+    public String name;
+    @Parameter
+    public List<String> mainParameters;
+  }
+  def "dashDashParameter"() {
+    when: "args parsed"
+      DashDashParameterArguments a = new DashDashParameterArguments();
+      new JCommander(a, "-name", "theName", "--", "param1", "param2");
+    then: "values match"
+      "theName" == a.name
+      ["param1", "param2"] == a.mainParameters
+  }
+
+  class DashDashParameter2Arguments {
+    @Parameter(names = [ "-name" ])
+    public String name;
+    @Parameter
+    public List<String> mainParameters;
+  }
+  public void dashDashParameter2() {
+    when: "args parsed"
+      DashDashParameter2Arguments a = new DashDashParameter2Arguments();
+      new JCommander(a, "param1", "param2", "--", "param3", "-name", "theName");
+    then: "values match"
+      null == a.name
+      ["param1", "param2", "param3", "-name", "theName"] == a.mainParameters
+  }
+
+  class AccessArguments {
+    private int bar;
+
+    @Parameter(names = "-bar")
+    private void setBar(int value) {
+      bar = value;
+    }
+  }
+  public void access() {
+    when: "args parsed"
+      AccessArguments a = new AccessArguments();
+      new JCommander(a, "-bar", "1");
+    then: "error thrown"
+      def e = thrown(ParameterException)
+      e.getMessage().contains("invoke")
+  }
+
+  public static void main(String[] args) throws Exception {
+    new JCommanderTest().access();
+//    class A {
+//      @Parameter(names = "-short", required = true)
 //      List<String> parameters;
+//
+//      @Parameter(names = "-long", required = true)
+//      public long l;
 //    }
-//    @Parameters(commandDescription = "command b")
-//    class ArgCommandB {
-//      @Parameter(description = "command b parameters")
-//      List<String> parameters;
-//    }
-//
-//    Arg a = new Arg();
-//
-//    JCommander c = new JCommander(a);
-//    c.addCommand("a", new ArgCommandA());
-//    c.addCommand("b", new ArgCommandB());
-//
-//    StringBuilder sb = new StringBuilder();
-//    c.usage(sb);
-//    Assert.assertTrue(sb.toString().contains("[command options]\n  Commands:"));
-//  }
-//
-//  public void usageWithEmpytLine() {
-//    class Arg {
-//    }
-//    @Parameters(commandDescription = "command a")
-//    class ArgCommandA {
-//      @Parameter(description = "command a parameters")
-//      List<String> parameters;
-//    }
-//    @Parameters(commandDescription = "command b")
-//    class ArgCommandB {
-//      @Parameter(description = "command b parameters")
-//      List<String> parameters;
-//    }
-//
-//    Arg a = new Arg();
-//
-//    JCommander c = new JCommander(a);
-//    c.addCommand("a", new ArgCommandA());
-//    c.addCommand("b", new ArgCommandB());
-//
-//    StringBuilder sb = new StringBuilder();
-//    c.usage(sb);
-//    Assert.assertTrue(sb.toString().contains("command a parameters\n\n    b"));
-//  }
-//
-//  public void partialValidation() {
-//    class Arg {
-//      @Parameter(names = { "-h", "--host" })
-//      String host;
-//    }
-//    Arg a = new Arg();
-//    JCommander jc = new JCommander();
-//    jc.setAcceptUnknownOptions(true);
-//    jc.addObject(a);
-//    jc.parse("-a", "foo", "-h", "host");
-//    Assert.assertEquals(a.host, "host");
-//    Assert.assertEquals(jc.getUnknownOptions(), Lists.newArrayList("-a", "foo"));
-//  }
-//
-//  /**
-//   * GITHUB-137.
-//   */
-//  public void listArgShouldBeCleared() {
-//    class Args {
-//      @Parameter(description = "[endpoint]")
-//      public List<String> endpoint = Lists.newArrayList("prod");
-//    }
-//    Args a = new Args();
-//    new JCommander(a, new String[] { "dev" });
-//    Assert.assertEquals(a.endpoint, Lists.newArrayList("dev"));
-//  }
-//
-//  public void dashDashParameter() {
-//    class Arguments {
-//        @Parameter(names = { "-name" })
-//        public String name;
-//        @Parameter
-//        public List<String> mainParameters;
-//    }
-//
-//    Arguments a = new Arguments();
-//    new JCommander(a, new String[] {
-//        "-name", "theName", "--", "param1", "param2"}
-//    );
-//    Assert.assertEquals(a.name, "theName");
-//    Assert.assertEquals(a.mainParameters.size(), 2);
-//    Assert.assertEquals(a.mainParameters.get(0), "param1");
-//    Assert.assertEquals(a.mainParameters.get(1), "param2");
-//  }
-//
-//  public void dashDashParameter2() {
-//    class Arguments {
-//        @Parameter(names = { "-name" })
-//        public String name;
-//        @Parameter
-//        public List<String> mainParameters;
-//    }
-//
-//    Arguments a = new Arguments();
-//    new JCommander(a, new String[] {
-//        "param1", "param2", "--", "param3", "-name", "theName"}
-//    );
-//    Assert.assertNull(a.name);
-//    Assert.assertEquals(a.mainParameters.size(), 5);
-//    Assert.assertEquals(a.mainParameters.get(0), "param1");
-//    Assert.assertEquals(a.mainParameters.get(1), "param2");
-//    Assert.assertEquals(a.mainParameters.get(2), "param3");
-//    Assert.assertEquals(a.mainParameters.get(3), "-name");
-//    Assert.assertEquals(a.mainParameters.get(4), "theName");
-//  }
-//
-//  public void access() {
-//    class Arguments {
-//      private int bar;
-//
-//      @Parameter(names = "-bar")
-//      private void setBar(int value) {
-//        bar = value;
-//      }
-//    }
-//    try {
-//      Arguments a = new Arguments();
-//      new JCommander(a, new String[] { "-bar", "1" });
-//    } catch(ParameterException ex) {
-//      Assert.assertTrue(ex.getMessage().contains("invoke"));
-//    }
-//  }
-//
-//  @Test(enabled = false)
-//  public static void main(String[] args) throws Exception {
-//    new JCommanderTest().access();
-////    class A {
-////      @Parameter(names = "-short", required = true)
-////      List<String> parameters;
-////
-////      @Parameter(names = "-long", required = true)
-////      public long l;
-////    }
-////    A a = new A();
-////    new JCommander(a).parse();
-////    System.out.println(a.l);
-////    System.out.println(a.parameters);
-////    ArgsList al = new ArgsList();
-////    JCommander j = new JCommander(al);
-////    j.setColumnSize(40);
-////    j.usage();
-////    new JCommanderTest().testListAndSplitters();
-////    new JCommanderTest().converterArgs();
-//  }
+//    A a = new A();
+//    new JCommander(a).parse();
+//    System.out.println(a.l);
+//    System.out.println(a.parameters);
+//    ArgsList al = new ArgsList();
+//    JCommander j = new JCommander(al);
+//    j.setColumnSize(40);
+//    j.usage();
+//    new JCommanderTest().testListAndSplitters();
+//    new JCommanderTest().converterArgs();
+  }
 
   // Tests:
   // required unparsed parameter
