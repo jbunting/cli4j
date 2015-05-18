@@ -16,16 +16,8 @@
  * limitations under the License.
  */
 
-package io.bunting.cli4j.parser;
+package io.bunting.cli4j.parser
 
-import io.bunting.cli4j.parser.DynamicParameter;
-import io.bunting.cli4j.parser.IParameterValidator;
-import io.bunting.cli4j.parser.IParameterValidator2;
-import io.bunting.cli4j.parser.JCommander;
-import io.bunting.cli4j.parser.Parameter;
-import io.bunting.cli4j.parser.ParameterDescription;
-import io.bunting.cli4j.parser.ParameterException;
-import io.bunting.cli4j.parser.Parameters;
 import io.bunting.cli4j.parser.args.*;
 import io.bunting.cli4j.parser.args.ArgsEnum.ChoiceType;
 import io.bunting.cli4j.parser.command.CommandAdd;
@@ -34,19 +26,20 @@ import io.bunting.cli4j.parser.command.CommandMain;
 import io.bunting.cli4j.parser.internal.Lists;
 import io.bunting.cli4j.parser.internal.Maps;
 
-import org.junit.Assert;
-import org.junit.Test
+import org.junit.Assert
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll;
 //import org.testng.annotations.DataProvider;
 
 
-import java.io.*;
-import java.math.BigDecimal;
+import java.io.*
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.ResourceBundle;
+import java.util.ResourceBundle
+
+import static spock.util.matcher.HamcrestMatchers.closeTo;
 
 public class JCommanderTest extends Specification {
   def "simple args"() {
@@ -421,12 +414,12 @@ public class JCommanderTest extends Specification {
       expected == actual
   }
 
-  private void verifyCommandOrdering(String[] commandNames, Object[] commands) {
+  def "verifyCommandOrdering"() {
     when: "commands configured"
       CommandMain cm = new CommandMain();
       JCommander jc = new JCommander(cm);
 
-      for (int i = 0; i < commands.length; i++) {
+      for (int i = 0; i < commands.size(); i++) {
         jc.addCommand(commandNames[i], commands[i]);
       }
     then: "they're all there"
@@ -447,7 +440,7 @@ public class JCommanderTest extends Specification {
     ];
   }
 
-  public void arity1Fail() {
+  def "arity1Fail"() {
     when: "args parsed"
       final Arity1 arguments = new Arity1();
       final JCommander jCommander = new JCommander(arguments);
@@ -533,128 +526,135 @@ public class JCommanderTest extends Specification {
       thrown(ParameterException)
   }
 
-//  public void atFileCanContainEmptyLines() throws IOException {
-//    File f = File.createTempFile("JCommander", null);
-//    f.deleteOnExit();
-//    FileWriter fw = new FileWriter(f);
-//    fw.write("-log\n");
-//    fw.write("\n");
-//    fw.write("2\n");
-//    fw.close();
-//    new JCommander(new Args1(), "@" + f.getAbsolutePath());
-//  }
-//
-//  public void handleEqualSigns() {
-//    ArgsEquals a = new ArgsEquals();
-//    JCommander jc = new JCommander(a);
-//    jc.parse(new String[] { "-args=a=b,b=c" });
-//    Assert.assertEquals(a.args, "a=b,b=c");
-//  }
-//
-//  @SuppressWarnings("serial")
-//  public void handleSets() {
-//    ArgsWithSet a = new ArgsWithSet();
-//    new JCommander(a, new String[] { "-s", "3,1,2" });
-//    Assert.assertEquals(a.set, new TreeSet<Integer>() {{ add(1); add(2); add(3); }});
-//  }
-//
-//  private static final List<String> V = Arrays.asList("a", "b", "c", "d");
-//
-//  @DataProvider
-//  public Object[][] variable() {
-//    return new Object[][] {
-//        new Object[] { 0, V.subList(0, 0), V },
-//        new Object[] { 1, V.subList(0, 1), V.subList(1, 4) },
-//        new Object[] { 2, V.subList(0, 2), V.subList(2, 4) },
-//        new Object[] { 3, V.subList(0, 3), V.subList(3, 4) },
-//        new Object[] { 4, V.subList(0, 4), V.subList(4, 4) },
-//    };
-//  }
-//
-//  @Test(dataProvider = "variable")
-//  public void variableArity(int count, List<String> var, List<String> main) {
-//    VariableArity va = new VariableArity(count);
-//    new JCommander(va).parse("-variable", "a", "b", "c", "d");
-//    Assert.assertEquals(var, va.var);
-//    Assert.assertEquals(main, va.main);
-//  }
-//
-//  public void enumArgs() {
-//    ArgsEnum args = new ArgsEnum();
-//    String[] argv = { "-choice", "ONE", "-choices", "ONE", "Two" };
-//    JCommander jc = new JCommander(args, argv);
-//
-//    Assert.assertEquals(args.choice, ArgsEnum.ChoiceType.ONE);
-//
-//    List<ChoiceType> expected = Arrays.asList(ChoiceType.ONE, ChoiceType.Two);
-//    Assert.assertEquals(expected, args.choices);
-//    Assert.assertEquals(jc.getParameters().get(0).getDescription(),
-//        "Options: " + EnumSet.allOf((Class<? extends Enum>) ArgsEnum.ChoiceType.class));
-//
-//  }
-//
-//  public void enumArgsCaseInsensitive() {
-//      ArgsEnum args = new ArgsEnum();
-//      String[] argv = { "-choice", "one"};
-//      JCommander jc = new JCommander(args, argv);
-//
-//      Assert.assertEquals(args.choice, ArgsEnum.ChoiceType.ONE);
-//  }
-//
-//  @Test(expectedExceptions = ParameterException.class)
-//  public void enumArgsFail() {
-//    ArgsEnum args = new ArgsEnum();
-//    String[] argv = { "-choice", "A" };
-//    new JCommander(args, argv);
-//  }
-//
-//  public void testListAndSplitters() {
-//    ArgsList al = new ArgsList();
-//    JCommander j = new JCommander(al);
-//    j.parse("-groups", "a,b", "-ints", "41,42", "-hp", "localhost:1000;example.com:1001",
-//        "-hp2", "localhost:1000,example.com:1001", "-uppercase", "ab,cd");
-//    Assert.assertEquals(al.groups.get(0), "a");
-//    Assert.assertEquals(al.groups.get(1), "b");
-//    Assert.assertEquals(al.ints.get(0).intValue(), 41);
-//    Assert.assertEquals(al.ints.get(1).intValue(), 42);
-//    Assert.assertEquals(al.hostPorts.get(0).host, "localhost");
-//    Assert.assertEquals(al.hostPorts.get(0).port.intValue(), 1000);
-//    Assert.assertEquals(al.hostPorts.get(1).host, "example.com");
-//    Assert.assertEquals(al.hostPorts.get(1).port.intValue(), 1001);
-//    Assert.assertEquals(al.hp2.get(1).host, "example.com");
-//    Assert.assertEquals(al.hp2.get(1).port.intValue(), 1001);
-//    Assert.assertEquals(al.uppercase.get(0), "AB");
-//    Assert.assertEquals(al.uppercase.get(1), "CD");
-//  }
-//
-//  @Test(expectedExceptions = ParameterException.class)
-//  public void shouldThrowIfUnknownOption() {
-//    class A {
-//      @Parameter(names = "-long")
-//      public long l;
-//    }
-//    A a = new A();
-//    new JCommander(a).parse("-lon", "32");
-//  }
-//
-//  @Test(expectedExceptions = ParameterException.class)
-//  public void mainParameterShouldBeValidate() {
-//    class V implements IParameterValidator {
-//
-//      @Override
-//      public void validate(String name, String value) throws ParameterException {
-//        Assert.assertEquals("a", value);
-//      }
-//    }
-//
-//    class A {
-//      @Parameter(validateWith = V.class)
-//      public List<String> m;
-//    }
-//
-//    A a = new A();
-//    new JCommander(a).parse("b");
-//  }
+  def "atFileCanContainEmptyLines"() throws IOException {
+    expect: "doesn't fail"
+      File f = File.createTempFile("JCommander", null);
+      f.deleteOnExit();
+      FileWriter fw = new FileWriter(f);
+      fw.write("-log\n");
+      fw.write("\n");
+      fw.write("2\n");
+      fw.close();
+      new JCommander(new Args1(), "@" + f.getAbsolutePath());
+  }
+
+  def "handleEqualSigns"() {
+    when: "args parsed"
+      ArgsEquals a = new ArgsEquals();
+      JCommander jc = new JCommander(a);
+      jc.parse("-args=a=b,b=c");
+    then: "values match"
+      "a=b,b=c" == a.args
+  }
+
+  @SuppressWarnings("serial")
+  def "handleSets"() {
+    when: "args parsed"
+      ArgsWithSet a = new ArgsWithSet();
+      new JCommander(a, "-s", "3,1,2" );
+    then: "values match"
+      [1, 2, 3] as Set == a.set
+  }
+
+  private static final List<String> V = ["a", "b", "c", "d"];
+
+  public Object[][] variable() {
+    return [
+        [ 0, V.subList(0, 0), V ],
+        [ 1, V.subList(0, 1), V.subList(1, 4) ],
+        [ 2, V.subList(0, 2), V.subList(2, 4) ],
+        [ 3, V.subList(0, 3), V.subList(3, 4) ],
+        [ 4, V.subList(0, 4), V.subList(4, 4) ],
+    ];
+  }
+
+  def "variableArity"() {
+    when: "args parsed"
+      VariableArity va = new VariableArity(count);
+      new JCommander(va).parse("-variable", "a", "b", "c", "d");
+    then: "values match"
+      Assert.assertEquals(var, va.var);
+      Assert.assertEquals(main, va.main);
+    where:
+      [count, var, main] << variable()
+  }
+
+  def "enumArgs"() {
+    when: "args parsed"
+      ArgsEnum args = new ArgsEnum();
+      String[] argv = [ "-choice", "ONE", "-choices", "ONE", "Two" ];
+      JCommander jc = new JCommander(args, argv);
+    then: "values match"
+      ChoiceType.ONE == args.choice
+      [ChoiceType.ONE, ChoiceType.Two] == args.choices;
+  }
+
+
+  def "enumArgsCaseInsensitive"() {
+    when: "args parsed"
+      ArgsEnum args = new ArgsEnum();
+      String[] argv = [ "-choice", "one"];
+      JCommander jc = new JCommander(args, argv);
+    then: "values match"
+      ChoiceType.ONE == args.choice
+  }
+
+  def "enumArgsFail"() {
+    when: "args parsed"
+    ArgsEnum args = new ArgsEnum();
+    String[] argv = [ "-choice", "A" ];
+    new JCommander(args, argv);
+    then: "error thrown"
+      thrown(ParameterException)
+  }
+
+  def "testListAndSplitters"() {
+    when: "args parsed"
+      ArgsList al = new ArgsList();
+      JCommander j = new JCommander(al);
+      j.parse("-groups", "a,b", "-ints", "41,42", "-hp", "localhost:1000;example.com:1001",
+          "-hp2", "localhost:1000,example.com:1001", "-uppercase", "ab,cd");
+    then: "values match"
+      ["a", "b"] == al.groups
+      [41, 42] == al.ints
+      [new HostPort(host:"localhost", port:1000), new HostPort(host:"example.com", port:1001)] == al.hostPorts
+      [new HostPort(host:"localhost", port:1000), new HostPort(host:"example.com", port:1001)] == al.hp2
+      ["AB", "CD"] == al.uppercase
+  }
+
+  class shouldThrowIfUnknownA {
+    @Parameter(names = "-long")
+    public long l;
+  }
+  def "shouldThrowIfUnknownOption"() {
+    when: "args parsed"
+      def a = new shouldThrowIfUnknownA();
+      new JCommander(a).parse("-lon", "32");
+    then: "error thrown"
+      thrown(ParameterException)
+  }
+
+  class mainParameterV implements IParameterValidator {
+
+    @Override
+    public void validate(String name, String value) throws ParameterException {
+      Assert.assertEquals("a", value);
+    }
+  }
+
+  class mainParameterA {
+    @Parameter(validateWith = mainParameterV.class)
+    public List<String> m;
+  }
+
+  def "mainParameterShouldBeValidate"() {
+    when: "args parsed"
+      def a = new mainParameterA();
+      new JCommander(a).parse("b");
+    then: "error thrown"
+      thrown(ParameterException)
+
+  }
 
   @Parameters(commandNames = [ "--configure" ])
   public static class ConfigureArgs {
@@ -668,185 +668,190 @@ public class JCommanderTest extends Specification {
     private boolean version;
   }
 
-//  public void commandsWithSamePrefixAsOptionsShouldWork() {
-//    BaseArgs a = new BaseArgs();
-//    ConfigureArgs conf = new ConfigureArgs();
-//    JCommander jc = new JCommander(a);
-//    jc.addCommand(conf);
-//    jc.parse("--configure");
-//  }
-//
-//  // Tests:
-//  // required unparsed parameter
-//  @Test(enabled = false,
-//      description = "For some reason, this test still asks the password on stdin")
-//  public void askedRequiredPassword() {
-//    class A {
-//        @Parameter(names = { "--password", "-p" }, description = "Private key password",
-//            password = true, required = true)
-//        public String password;
-//
-//        @Parameter(names = { "--port", "-o" }, description = "Port to bind server to",
-//            required = true)
-//        public int port;
-//    }
-//    A a = new A();
-//    InputStream stdin = System.in;
-//    try {
-//      System.setIn(new ByteArrayInputStream("password".getBytes()));
-//      new JCommander(a,new String[]{"--port", "7","--password"});
-//      Assert.assertEquals(a.port, 7);
-//      Assert.assertEquals(a.password, "password");
-//    } finally {
-//      System.setIn(stdin);
-//    }
-//  }
-//
-//  public void dynamicParameters() {
-//    class Command {
-//      @DynamicParameter(names = {"-P"}, description = "Additional command parameters")
-//      private Map<String, String> params = Maps.newHashMap();
-//    }
-//    JCommander commander = new JCommander();
-//    Command c = new Command();
-//    commander.addCommand("command", c);
-//    commander.parse(new String[] { "command", "-Pparam='name=value'" });
-//    Assert.assertEquals(c.params.get("param"), "'name=value'");
-//  }
-//
-//  public void exeParser() {
-//      class Params {
-//        @Parameter( names= "-i")
-//        private String inputFile;
-//      }
-//
-//      String args[] = { "-i", "" };
-//      Params p = new Params();
-//      new JCommander(p, args);
-//  }
-//
-//  public void multiVariableArityList() {
-//    class Params {
-//      @Parameter(names = "-paramA", description = "ParamA", variableArity = true)
-//      private List<String> paramA = Lists.newArrayList();
-//
-//      @Parameter(names = "-paramB", description = "ParamB", variableArity = true)
-//      private List<String> paramB = Lists.newArrayList();
-//    }
-//
-//    {
-//      String args[] = { "-paramA", "a1", "a2", "-paramB", "b1", "b2", "b3" };
-//      Params p = new Params();
-//      new JCommander(p, args).parse();
-//      Assert.assertEquals(p.paramA, Arrays.asList(new String[] { "a1", "a2" }));
-//      Assert.assertEquals(p.paramB, Arrays.asList(new String[] { "b1", "b2", "b3" }));
-//    }
-//
-//    {
-//      String args[] = { "-paramA", "a1", "a2", "-paramB", "b1", "-paramA", "a3" };
-//      Params p = new Params();
-//      new JCommander(p, args).parse();
-//      Assert.assertEquals(p.paramA, Arrays.asList(new String[] { "a1", "a2", "a3" }));
-//      Assert.assertEquals(p.paramB, Arrays.asList(new String[] { "b1" }));
-//    }
-//  }
-//
-//  @Test(enabled = false,
-//      description = "Need to double check that the command description is i18n'ed in the usage")
-//  public void commandKey() {
-//    @Parameters(resourceBundle = "MessageBundle", commandDescriptionKey = "command")
-//    class Args {
-//      @Parameter(names="-myoption", descriptionKey="myoption")
-//      private boolean option;
-//    }
-//    JCommander j = new JCommander();
-//    Args a = new Args();
-//    j.addCommand("comm", a);
-//    j.usage();
-//  }
-//
-//  public void tmp() {
-//    class A {
-//      @Parameter(names = "-b")
-//      public String b;
-//    }
-//    new JCommander(new A()).parse("");
-//  }
-//
-//  public void unknownOptionWithDifferentPrefix() {
-//    @Parameters(optionPrefixes = "/")
-//    class SlashSeparator {
-//
-//     @Parameter(names = "/verbose")
-//     public boolean verbose = false;
-//
-//     @Parameter(names = "/file")
-//     public String file;
-//    }
-//    SlashSeparator ss = new SlashSeparator();
-//    try {
-//      new JCommander(ss).parse("/notAParam");
-//    } catch (ParameterException ex) {
-//      boolean result = ex.getMessage().contains("Unknown option");
-//      Assert.assertTrue(result);
-//    }
-//  }
-//
-//  public void equalSeparator() {
-//    @Parameters(separators = "=", commandDescription = "My command")
-//    class MyClass {
-//
-//       @Parameter(names = { "-p", "--param" }, required = true, description = "param desc...")
-//       private String param;
-//    }
-//    MyClass c = new MyClass();
-//    String expected = "\"hello\"world";
-//    new JCommander(c).parse("--param=" + expected);
-//    Assert.assertEquals(expected, c.param);
-//  }
-//
-//  public void simpleArgsSetter() throws ParseException {
-//    Args1Setter args = new Args1Setter();
-//    String[] argv = { "-debug", "-log", "2", "-float", "1.2", "-double", "1.3", "-bigdecimal", "1.4",
-//            "-date", "2011-10-26", "-groups", "unit", "a", "b", "c" };
-//    new JCommander(args, argv);
-//
-//    Assert.assertTrue(args.debug);
-//    Assert.assertEquals(args.verbose.intValue(), 2);
-//    Assert.assertEquals(args.groups, "unit");
-//    Assert.assertEquals(args.parameters, Arrays.asList("a", "b", "c"));
-//    Assert.assertEquals(args.floa, 1.2f, 0.1f);
-//    Assert.assertEquals(args.doub, 1.3f, 0.1f);
-//    Assert.assertEquals(args.bigd, new BigDecimal("1.4"));
-//    Assert.assertEquals(args.date, new SimpleDateFormat("yyyy-MM-dd").parse("2011-10-26"));
-//  }
-//
-//  public void verifyHelp() {
-//    class Arg {
-//      @Parameter(names = "--help", help = true)
-//      public boolean help = false;
-//
-//      @Parameter(names = "file", required = true)
-//      public String file;
-//    }
-//    Arg arg = new Arg();
-//    String[] argv = { "--help" };
-//    new JCommander(arg, argv);
-//
-//    Assert.assertTrue(arg.help);
-//  }
-//
-//  public void helpTest() {
-//    class Arg {
-//      @Parameter(names = { "?", "-help", "--help" }, description = "Shows help", help = true)
-//      private boolean help = false;
-//    }
-//    Arg arg = new Arg();
-//    JCommander jc = new JCommander(arg);
-//    jc.parse(new String[] { "-help" });
-////    System.out.println("helpTest:" + arg.help);
-//  }
-//
+  def "commandsWithSamePrefixAsOptionsShouldWork"() {
+    expect: "it work"
+      BaseArgs a = new BaseArgs();
+      ConfigureArgs conf = new ConfigureArgs();
+      JCommander jc = new JCommander(a);
+      jc.addCommand(conf);
+      jc.parse("--configure");
+  }
+
+  // Tests:
+  // required unparsed parameter
+  class askedRequiredPasswordA {
+    @Parameter(names = [ "--password", "-p" ], description = "Private key password",
+            password = true, required = true)
+    public String password;
+
+    @Parameter(names = [ "--port", "-o" ], description = "Port to bind server to",
+            required = true)
+    public int port;
+  }
+  @Ignore
+  def "askedRequiredPassword"() {
+    def a = new askedRequiredPasswordA();
+    InputStream stdin = System.in;
+    try {
+      System.setIn(new ByteArrayInputStream("password".getBytes()));
+      new JCommander(a,"--port", "7","--password");
+      Assert.assertEquals(a.port, 7);
+      Assert.assertEquals(a.password, "password");
+    } finally {
+      System.setIn(stdin);
+    }
+  }
+
+  class dynamicParametersCommand {
+    @DynamicParameter(names = ["-P"], description = "Additional command parameters")
+    private Map<String, String> params = Maps.newHashMap();
+  }
+  def "dynamicParameters"() {
+    when: "args parsed"
+      JCommander commander = new JCommander();
+      def c = new dynamicParametersCommand();
+      commander.addCommand("command", c);
+      commander.parse( "command", "-Pparam='name=value'" );
+    then: "values match"
+      [param: "'name=value'"] == c.params
+  }
+
+  class exeParserParams {
+    @Parameter( names= "-i")
+    private String inputFile;
+  }
+  def "exeParser"() {
+    expect: "it work"
+      String[] args = [ "-i", "" ];
+      def p = new exeParserParams();
+      new JCommander(p, args);
+  }
+
+  class multiVariableParams {
+    @Parameter(names = "-paramA", description = "ParamA", variableArity = true)
+    private List<String> paramA = Lists.newArrayList();
+
+    @Parameter(names = "-paramB", description = "ParamB", variableArity = true)
+    private List<String> paramB = Lists.newArrayList();
+  }
+  def "multiVariableArityList"() {
+    when: "args parsed"
+      String[] args = [ "-paramA", "a1", "a2", "-paramB", "b1", "b2", "b3" ];
+      def p = new multiVariableParams();
+      new JCommander(p, args).parse();
+    then: "values match"
+      ["a1", "a2"] == p.paramA
+      ["b1", "b2", "b3"] == p.paramB
+    when: "more args parsed"
+      String[] moreArgs = [ "-paramA", "a1", "a2", "-paramB", "b1", "-paramA", "a3" ];
+      def moreP = new multiVariableParams();
+      new JCommander(moreP, moreArgs).parse();
+    then: "more values match"
+      ["a1", "a2", "a3"] == moreP.paramA
+      ["b1"] == moreP.paramB
+  }
+
+  @Parameters(resourceBundle = "MessageBundle", commandDescriptionKey = "command")
+  class commandKeyArgs {
+    @Parameter(names="-myoption", descriptionKey="myoption")
+    private boolean option;
+  }
+  @Ignore("no resource bundles")
+  def "commandKey"() {
+    expect: "it work"
+      JCommander j = new JCommander();
+      def a = new commandKeyArgs();
+      j.addCommand("comm", a);
+      j.usage();
+  }
+
+  class tmpA {
+    @Parameter(names = "-b")
+    public String b;
+  }
+  def "tmp"() {
+    expect: "it work"
+      new JCommander(new tmpA()).parse("");
+  }
+
+  @Parameters(optionPrefixes = "/")
+  class SlashSeparator {
+
+    @Parameter(names = "/verbose")
+    public boolean verbose = false;
+
+    @Parameter(names = "/file")
+    public String file;
+  }
+  def "unknownOptionWithDifferentPrefix"() {
+    when: "args parsed"
+      SlashSeparator ss = new SlashSeparator();
+      new JCommander(ss).parse("/notAParam");
+    then: "error thrown and has proper text"
+      def e = thrown(ParameterException)
+      e.getMessage().contains("Unknown option")
+  }
+
+  @Parameters(separators = "=", commandDescription = "My command")
+  class equalSeparatorMyClass {
+
+    @Parameter(names = [ "-p", "--param" ], required = true, description = "param desc...")
+    private String param;
+  }
+  def "equalSeparator"() {
+    when: "args parsed"
+      def c = new equalSeparatorMyClass();
+      String expected = "\"hello\"world";
+      new JCommander(c).parse("--param=" + expected);
+    then: "values match"
+      expected == c.param
+  }
+
+  def "simpleArgsSetter"() throws ParseException {
+    when: "args parsed"
+      Args1Setter args = new Args1Setter();
+      String[] argv = [ "-debug", "-log", "2", "-float", "1.2", "-double", "1.3", "-bigdecimal", "1.4",
+              "-date", "2011-10-26", "-groups", "unit", "a", "b", "c" ];
+      new JCommander(args, argv);
+    then: "values match"
+      args.debug
+      2 == args.verbose
+      "unit" == args.groups
+      ["a", "b", "c" ] == args.parameters
+      1.2f closeTo(args.floa, 0.0001f)
+      1.3f closeTo(args.doub, 0.0001f)
+      new BigDecimal("1.4") == args.bigd
+      new SimpleDateFormat("yyyy-MM-dd").parse("2011-10-26") == args.date
+  }
+
+  class verifyHelpArg {
+    @Parameter(names = "--help", help = true)
+    public boolean help = false;
+
+    @Parameter(names = "file", required = true)
+    public String file;
+  }
+  def "verifyHelp"() {
+    when: "args parsed"
+      def arg = new verifyHelpArg();
+      String[] argv = [ "--help" ];
+      new JCommander(arg, argv);
+    then: "values match"
+      arg.help
+  }
+
+  class helpTestArg {
+    @Parameter(names = [ "?", "-help", "--help" ], description = "Shows help", help = true)
+    private boolean help = false;
+  }
+  def "helpTest"() {
+    expect: "it work"
+      def arg = new helpTestArg();
+      JCommander jc = new JCommander(arg);
+      jc.parse("-help");
+  }
+
+
 //  @Test(enabled = false, description = "Should only be enable once multiple parameters are allowed")
 //  public void duplicateParameterNames() {
 //    class ArgBase {
@@ -866,66 +871,74 @@ public class JCommanderTest extends Specification {
 //    Assert.assertEquals(arg2.host, "foo");
 //  }
 //
-//  public void parameterWithOneDoubleQuote() {
-//    @Parameters(separators = "=")
-//    class Arg {
-//      @Parameter(names = { "-p", "--param" })
-//      private String param;
-//    }
-//    JCommander jc = new JCommander(new MyClass());
-//    jc.parse("-p=\"");
-//  }
-//
-//  public void emptyStringAsDefault() {
-//    class Arg {
-//      @Parameter(names = "-x")
-//      String s = "";
-//    }
-//    Arg a = new Arg();
-//    StringBuilder sb = new StringBuilder();
-//    new JCommander(a).usage(sb);
-//    Assert.assertTrue(sb.toString().contains("Default: <empty string>"));
-//  }
-//
-//  public void spaces() {
-//    class Arg {
-//      @Parameter(names = "-rule", description = "rule")
-//      private List<String> rules = new ArrayList<String>();
-//    }
-//    Arg a = new Arg();
-//    new JCommander(a, "-rule", "some test");
-//    Assert.assertEquals(a.rules, Arrays.asList("some test"));
-//  }
-//
-//  static class V2 implements IParameterValidator2 {
-//    final static List<String> names =  Lists.newArrayList();
-//    static boolean validateCalled = false;
-//
-//    @Override
-//    public void validate(String name, String value) throws ParameterException {
-//      validateCalled = true;
-//    }
-//
-//    @Override
-//    public void validate(String name, String value, ParameterDescription pd)
-//        throws ParameterException {
-//      names.addAll(Arrays.asList(pd.getParameter().names()));
-//    }
-//  }
-//
-//  public void validator2() {
-//    class Arg {
-//      @Parameter(names = { "-h", "--host" }, validateWith = V2.class)
-//      String host;
-//    }
-//    Arg a = new Arg();
-//    V2.names.clear();
-//    V2.validateCalled = false;
-//    JCommander jc = new JCommander(a, "--host", "h");
-//    jc.setAcceptUnknownOptions(true);
-//    Assert.assertEquals(V2.names, Arrays.asList(new String[] { "-h", "--host" }));
-//    Assert.assertTrue(V2.validateCalled);
-//  }
+  @Parameters(separators = "=")
+  class OneDoubleQuoteArg {
+    @Parameter(names = [ "-p", "--param" ])
+    private String param;
+  }
+  def "parameterWithOneDoubleQuote"() {
+    expect: "it work"
+      JCommander jc = new JCommander(new OneDoubleQuoteArg());
+      jc.parse("-p=\"");
+  }
+
+
+  class EmptyStringAsDefaultArg {
+    @Parameter(names = "-x")
+    String s = "";
+  }
+  def "emptyStringAsDefault"() {
+    when: "args parsed"
+      EmptyStringAsDefaultArg a = new EmptyStringAsDefaultArg();
+      StringBuilder sb = new StringBuilder();
+      new JCommander(a).usage(sb);
+    then: "values match"
+    sb.toString().contains("Default: <empty string>")
+  }
+
+  class SpacesArg {
+    @Parameter(names = "-rule", description = "rule")
+    private List<String> rules = new ArrayList<String>();
+  }
+  def "spaces"() {
+    when: "args parsed"
+      SpacesArg a = new SpacesArg();
+      new JCommander(a, "-rule", "some test");
+    then: "values match"
+      ["some test"] == a.rules
+  }
+
+  static class V2 implements IParameterValidator2 {
+    final static List<String> names =  Lists.newArrayList();
+    static boolean validateCalled = false;
+
+    @Override
+    public void validate(String name, String value) throws ParameterException {
+      validateCalled = true;
+    }
+
+    @Override
+    public void validate(String name, String value, ParameterDescription pd)
+        throws ParameterException {
+      names.addAll(Arrays.asList(pd.getParameter().names()));
+    }
+  }
+
+  class Validator2Arg {
+    @Parameter(names = [ "-h", "--host" ], validateWith = V2.class)
+    String host;
+  }
+  public void validator2() {
+    when: "args parsed"
+      Validator2Arg a = new Validator2Arg();
+      V2.names.clear();
+      V2.validateCalled = false;
+      JCommander jc = new JCommander(a, "--host", "h");
+      jc.setAcceptUnknownOptions(true);
+    then: "values match"
+      ["-h", "--host"] == V2.names
+      V2.validateCalled
+  }
 //
 //  public void usageCommandsUnderUsage() {
 //    class Arg {

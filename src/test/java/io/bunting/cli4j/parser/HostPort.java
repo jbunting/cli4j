@@ -18,6 +18,8 @@
 
 package io.bunting.cli4j.parser;
 
+import java.util.Objects;
+
 public class HostPort {
   public String host;
   public Integer port;
@@ -25,5 +27,19 @@ public class HostPort {
 
   public String toString() {
     return "[Host:" + host + " port:" + port + "]";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    HostPort hostPort = (HostPort) o;
+    return Objects.equals(host, hostPort.host) &&
+            Objects.equals(port, hostPort.port);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(host, port);
   }
 }
