@@ -1,4 +1,9 @@
 [![Build Status](https://travis-ci.org/jbunting/cli4j.svg)](https://travis-ci.org/jbunting/cli4j) [![Coverage Status](https://coveralls.io/repos/jbunting/cli4j/badge.svg)](https://coveralls.io/r/jbunting/cli4j)
+
+##NOTICE
+
+I am still interested in this project, but for the time being in an effort to improve iteration time, I have moved my efforts to an internal project that will provide these features. Eventually, I hope to resume this project using what I've learned there.
+
 cli4j
 -----
 
