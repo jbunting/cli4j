@@ -1,8 +1,10 @@
 [![Build Status](https://travis-ci.org/jbunting/cli4j.svg)](https://travis-ci.org/jbunting/cli4j) [![Coverage Status](https://coveralls.io/repos/jbunting/cli4j/badge.svg)](https://coveralls.io/r/jbunting/cli4j)
 
-##NOTICE
+## NOTICE
 
-I am still interested in this project, but for the time being in an effort to improve iteration time, I have moved my efforts to an internal project that will provide these features. Eventually, I hope to resume this project using what I've learned there.
+~~I am still interested in this project, but for the time being in an effort to improve iteration time, I have moved my efforts to an internal project that will provide these features. Eventually, I hope to resume this project using what I've learned there.~~
+
+I have been using the excellent [Clikt Library](https://ajalt.github.io/clikt/) since Kotlin has become my primary new project language. I advise you to check it out. I will likely not continue work on this project.
 
 cli4j
 -----
